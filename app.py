@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 
-CSV_PATH = "df_final.csv"
+CSV_PATH = "df_final_completo.csv"
 
 
 PLAYER = "Player"
@@ -493,9 +493,9 @@ def show_kpis(data: pd.DataFrame) -> None:
         st.caption("Jogador mais subvalorizado")
 
         coluna_imagem = next(
-            (col for col in ["Imagem", "Foto", "photo_url", "image_url", "player_face_url"] if col in data.columns),
-            None
-        )
+    (col for col in ["images", "Imagem", "Foto", "photo_url", "image_url", "player_face_url"] if col in data.columns),
+    None
+)
 
         if coluna_imagem and pd.notna(jogador_top[coluna_imagem]):
             st.image(str(jogador_top[coluna_imagem]), width=80)
