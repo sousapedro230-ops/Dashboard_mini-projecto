@@ -66,6 +66,11 @@ st.set_page_config(
     
 )
 
+st.title("Dashboard de Jogadores Subvalorizados")
+st.caption(
+        "Análise orientada à decisão: encontrar jogadores com bom Performance Score, "
+        "baixo valor de mercado e oportunidade clara dentro do respetivo cluster."
+    )
 
 def slugify(value: str) -> str:
     text = str(value).strip()
@@ -475,13 +480,28 @@ def league_summary(data: pd.DataFrame) -> go.Figure:
 
 
 def show_kpis(data: pd.DataFrame) -> None:
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1.4])
 
     col1.metric("Jogadores filtrados", f"{len(data):,}")
     col2.metric("Clusters ativos", f"{data[CLUSTER].nunique():,}")
     col3.metric("Valor médio", format_eur(data[MARKET_VALUE].mean()))
     col4.metric("Performance média", format_number(data[PERFORMANCE].mean()))
-    col5.metric("Melhor subvalorização", format_number(data[UNDERVALUED].max()))
+
+    jogador_top = data.dropna(subset=[PLAYER, UNDERVALUED]).sort_values(UNDERVALUED, ascending=False).iloc[0]
+
+    with col5:
+        st.caption("Jogador mais subvalorizado")
+
+        coluna_imagem = next(
+            (col for col in ["Imagem", "Foto", "photo_url", "image_url", "player_face_url"] if col in data.columns),
+            None
+        )
+
+        if coluna_imagem and pd.notna(jogador_top[coluna_imagem]):
+            st.image(str(jogador_top[coluna_imagem]), width=80)
+
+        st.markdown(f"**{jogador_top[PLAYER]}**")
+        st.caption(f"Subvalorização: {format_number(jogador_top[UNDERVALUED])}")
 
 
 def show_candidate_table(data: pd.DataFrame) -> None:
@@ -503,12 +523,8 @@ def show_candidate_table(data: pd.DataFrame) -> None:
     st.dataframe(table, use_container_width=True, hide_index=True)
 
 
-def main() -> None:
-    st.title("Dashboard de Jogadores Subvalorizados")
-    st.caption(
-        "Análise orientada à decisão: encontrar jogadores com bom Performance Score, "
-        "baixo valor de mercado e oportunidade clara dentro do respetivo cluster."
-    )
+
+
 
 uploaded_file = st.sidebar.file_uploader(
     "CSV alternativo",
@@ -583,6 +599,5 @@ with decision_tab:
         show_candidate_table(filtered_data)
 
 
-if __name__ == "__main__":
-    main()
+
 
