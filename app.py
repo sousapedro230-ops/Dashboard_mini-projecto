@@ -371,7 +371,7 @@ def pca_scatter(data: pd.DataFrame) -> go.Figure:
             UNDERVALUED: ":,.2f",
         },
         template="plotly_white",
-        title="Separação dos clusters no espaço PCA",
+        title="Resumo das variáveis em componentes principais",
         labels={PCA_1: "PCA 1", PCA_2: "PCA 2", CLUSTER: "Cluster"},
     )
     fig.update_traces(marker=dict(opacity=0.75, line=dict(width=0.5, color="white")))
